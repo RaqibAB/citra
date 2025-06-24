@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hasil Pengolahan Citra - {{ selected_method|replace('_', ' ')|title }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+        .page-header { /* Mengganti nama class .header agar tidak bentrok jika ada style global */
+            background: linear-gradient(135deg, #0d6efd, #4361ee);
+            color: white;
+            padding: 1.5rem; /* Ukuran padding disesuaikan */
+            text-align: center;
+            border-radius: 15px; /* Radius lebih kecil */
+            margin-bottom: 1.5rem; /* Margin bawah disesuaikan */
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+        .page-header h1 {
+            font-size: 2.2rem; /* Ukuran font disesuaikan */
+        }
+        .image-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+        }
+        .image-card {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        .image-card img {
+            max-width: 100%;
+            height: auto;
+            max-height: 350px; /* Batas tinggi maksimum agar tidak terlalu besar */
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            object-fit: contain; /* Agar gambar tidak terdistorsi */
+            background-color: #f0f0f0; /* Background jika gambar transparan */
+        }
+        .image-card h5 {
+            color: #0d6efd;
+            margin-top: 0.75rem;
+            font-weight: 600;
+        }
+        .controls-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .controls-card h4 {
+            color: var(--primary-color, #0d6efd); /* Gunakan var jika didefinisikan global, atau fallback */
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        .form-range:focus {
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #0d6efd, #4361ee);
+            border: none;
+        }
+         .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(13, 110, 253, 0.4);
+        }
+        .alert {
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="page-header">
+            <h1 class="fw-bold"><i class="fas fa-cogs me-2"></i>Hasil Pengolahan Citra</h1>
+            <p class="lead mb-0">Metode yang diterapkan: <strong>{{ selected_method|replace("_", " ")|title }}</strong></p>
+            <a href="{{ url_for('index') }}" class="btn btn-light mt-3">
+                <i class="fas fa-arrow-left me-2"></i>Kembali ke Beranda
+            </a>
+        </div>
+
+        {%- with messages = get_flashed_messages(with_categories=true) -%}
+            {%- if messages -%}
+                {%- for category, message in messages -%}
+                    <div class="alert alert-{{ category if category in ['success', 'warning', 'danger', 'info'] else 'secondary' }} alert-dismissible fade show" role="alert">
+                        <i class="fas fa-{{ 'check-circle' if category == 'success' else ('exclamation-triangle' if category == 'warning' or category == 'danger' else 'info-circle') }} me-2"></i>
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {%- endfor -%}
+            {%- endif -%}
+        {%- endwith -%}
+
+        <div class="image-container">
+            <div class="row justify-content-center">
+                {% if results.original %}
+                <div class="col-md-6 col-lg-4 image-card">
+                    <h5><i class="fas fa-image me-1"></i>Gambar Asli</h5>
+                    <img src="data:image/jpeg;base64,{{ results.original }}" alt="Gambar Asli">
+                </div>
+                {% endif %}
+
+                {% for method_key, image_base64 in results.items() %}
+                    {% if method_key != 'original' %}
+                    <div class="col-md-6 col-lg-4 image-card">
+                        <h5><i class="fas fa-magic me-1"></i>{{ method_key|replace('_', ' ')|title }}</h5>
+                        <img src="data:image/jpeg;base64,{{ image_base64 }}" alt="Hasil {{ method_key }}">
+                    </div>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if results|length <= 1 and not results.original and selected_method != 'edge' %} 
+                <div class="col-12 text-center">
+                    <p class="text-muted">Tidak ada hasil gambar yang diproses untuk ditampilkan saat ini. Coba sesuaikan parameter di bawah (jika tersedia) dan proses ulang.</p>
+                </div>
+                {% elif results|length == 1 and results.original and selected_method != 'edge' %}
+                 <div class="col-12 text-center">
+                    <p class="text-muted">Belum ada gambar hasil. Sesuaikan parameter di bawah (jika tersedia) dan proses.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if selected_method == 'threshold' or selected_method == 'morphology' %}
+        <div class="controls-card mb-4">
+            {% if selected_method == 'threshold' %}
+            <h4><i class="fas fa-sliders-h me-2"></i>Atur Ulang Thresholding</h4>
+            <form action="{{ url_for('process_image') }}" method="post">
+                <input type="hidden" name="process_type" value="threshold"> <div class="mb-3">
+                    <label for="threshold_value" class="form-label">Nilai Threshold (0-255):</label>
+                    <input type="range" class="form-range" id="threshold_value" name="threshold_value" min="0" max="255" value="{{ request.form.get('threshold_value', 127) }}" oninput="document.getElementById('threshold-value-display').textContent = this.value">
+                    <div class="text-center fw-bold text-primary" id="threshold-value-display">{{ request.form.get('threshold_value', 127) }}</div>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-sync-alt me-2"></i>Proses Ulang Thresholding
+                </button>
+            </form>
+            {% endif %}
+
+            {% if selected_method == 'morphology' %}
+            <h4><i class="fas fa-cogs me-2"></i>Atur Ulang Erosi/Dilasi</h4>
+            <form action="{{ url_for('process_image') }}" method="post">
+                <input type="hidden" name="process_type" value="morphology"> <div class="mb-3">
+                    <label for="morph_type" class="form-label">Jenis Proses:</label>
+                    <select class="form-select" id="morph_type" name="morph_type">
+                        <option value="erosi" {% if request.form.get('morph_type') == 'erosi' %}selected{% endif %}>Erosi</option>
+                        <option value="dilasi" {% if request.form.get('morph_type') == 'dilasi' %}selected{% endif %}>Dilasi</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="kernel_shape" class="form-label">Bentuk Kernel:</label>
+                    <select class="form-select" id="kernel_shape" name="kernel_shape">
+                        <option value="persegi" {% if request.form.get('kernel_shape') == 'persegi' %}selected{% endif %}>Persegi</option>
+                        <option value="lingkaran" {% if request.form.get('kernel_shape') == 'lingkaran' %}selected{% endif %}>Lingkaran</option>
+                        <option value="segitiga" {% if request.form.get('kernel_shape') == 'segitiga' %}selected{% endif %}>Segitiga</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="kernel_size" class="form-label">Ukuran Kernel (pixel, ganjil ≥ 3):</label>
+                    <input type="number" class="form-control" id="kernel_size" name="kernel_size" min="3" max="31" step="2" value="{{ request.form.get('kernel_size', 3) }}" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-sync-alt me-2"></i>Proses Ulang Morfologi
+                </button>
+            </form>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

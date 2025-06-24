@@ -1,0 +1,339 @@
+
+:root {
+    --primary-color: #0d6efd;
+    --secondary-color: #6c757d;
+    --success-color: #198754;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --dark-color: #212529;
+    --light-color: #f8f9fa;
+}
+
+body {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* typo: #667eea, bukan 667eea */
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.main-container {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    margin: 2rem auto;
+    max-width: 1200px; /* Batasi lebar maksimum agar lebih rapi di layar besar */
+    overflow: hidden;
+}
+
+.header { /* Header di index.html */
+    background: linear-gradient(135deg, var(--primary-color), #4361ee);
+    color: white;
+    padding: 2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%); /* Lebih subtle */
+    animation: rotate 20s linear infinite;
+}
+
+@keyframes rotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.header h1 {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    font-weight: 800;
+    font-size: 2.5rem;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.2); /* Shadow lebih subtle */
+}
+
+.header p {
+    position: relative;
+    z-index: 1;
+    margin: 0.5rem 0 0 0;
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+.sidebar {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); /* Shadow lebih subtle */
+    height: fit-content;
+    position: sticky;
+    top: 2rem;
+}
+
+.sidebar h4 {
+    color: var(--primary-color);
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.nav-pills .nav-link {
+    color: #333; /* Warna teks default */
+    border-radius: 10px;
+    margin-bottom: 0.5rem;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem; /* Sedikit lebih lebar */
+    padding: 0.6rem 1rem;
+}
+
+.nav-pills .nav-link:hover,
+.nav-pills .dropdown-item:hover {
+    background-color: rgba(13, 110, 253, 0.1);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    transform: translateX(5px);
+}
+
+.nav-pills .nav-link.active,
+.nav-pills .dropdown-item.active {
+    background: linear-gradient(135deg, var(--primary-color), #4361ee);
+    border-color: var(--primary-color);
+    color: white !important; /* Penting untuk override warna hover */
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(13, 110, 253, 0.3);
+}
+.nav-pills .dropdown-toggle.active { /* Khusus untuk toggle dropdown */
+     background: linear-gradient(135deg, var(--primary-color), #4361ee);
+    border-color: var(--primary-color);
+    color: white !important;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(13, 110, 253, 0.3);
+}
+
+
+.dropdown-menu {
+    border: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    border-radius: 10px;
+    padding: 0.5rem;
+    width: 100%; /* Agar dropdown selebar parentnya */
+}
+
+.dropdown-item {
+    border-radius: 8px;
+    margin-bottom: 0.25rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    color: #333;
+}
+
+.dropdown-item:focus { /* Hilangkan outline default bootstrap pada focus */
+    background-color: inherit; 
+    color: inherit;
+}
+
+.dropdown-item.active {
+    background: linear-gradient(135deg, var(--primary-color), #4361ee);
+    color: white !important;
+}
+.dropdown-item:active { /* Untuk state saat diklik */
+    background: linear-gradient(135deg, var(--primary-color), #3a54c0) !important; /* Warna lebih gelap saat aktif diklik */
+    color: white !important;
+}
+
+
+.main-content {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.upload-form {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-radius: 15px;
+    padding: 2rem;
+    border: 2px dashed var(--primary-color);
+    transition: all 0.3s ease;
+}
+
+.upload-form:hover {
+    border-color: #4361ee;
+    background: linear-gradient(135deg, #e3f2fd, #f3e5f5);
+    transform: scale(1.01); /* Sedikit efek hover */
+}
+
+.upload-form h3 {
+    color: var(--primary-color);
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.form-control {
+    border-radius: 10px;
+    border: 2px solid #ced4da; /* Warna border lebih jelas */
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.btn {
+    border-radius: 10px;
+    padding: 0.75rem 1.5rem; /* Padding disesuaikan */
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none; /* Pastikan semua button tidak ada border default */
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-color), #4361ee);
+    color: white;
+    box-shadow: 0 4px 15px rgba(13, 110, 253, 0.2); /* Shadow lebih subtle */
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #0b5ed7, #3a54c0); /* Warna hover lebih gelap */
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(13, 110, 253, 0.3);
+}
+
+.features {
+    margin-top: 2rem;
+}
+
+.feature-info {
+    background: linear-gradient(135deg, #fff, #f8f9fa);
+    border-radius: 15px;
+    padding: 2rem;
+    border-left: 5px solid var(--primary-color);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); /* Shadow lebih subtle */
+    transition: all 0.3s ease;
+    margin-bottom: 1.5rem; /* Jarak antar feature-info jika ada lebih dari satu ditampilkan */
+}
+
+.feature-info:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.feature-info h4 {
+    color: var(--primary-color);
+    font-weight: 700;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.feature-info p {
+    line-height: 1.6;
+    color: #555;
+}
+
+.feature-info ul {
+    list-style: none;
+    padding: 0;
+}
+
+.feature-info li {
+    padding: 0.5rem 0;
+    display: flex;
+    align-items: flex-start; /* Align items to start for multi-line text */
+    gap: 0.75rem; /* Gap lebih besar */
+    color: #555;
+}
+
+.feature-info li::before {
+    content: '\f00c'; /* FontAwesome check icon */
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900; /* Pastikan ikon solid terlihat */
+    color: var(--success-color);
+    background: rgba(25, 135, 84, 0.1);
+    border-radius: 50%;
+    min-width: 22px; /* Ukuran konsisten */
+    height: 22px;
+    display: inline-flex; /* Ganti ke inline-flex */
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    margin-top: 0.15em; /* Penyesuaian posisi vertikal */
+}
+
+
+.alert {
+    border-radius: 10px;
+    border: none;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) { /* Untuk tablet */
+    .main-container {
+        margin: 1.5rem auto;
+    }
+    .sidebar {
+        position: static; /* Sidebar tidak sticky di tablet */
+        margin-bottom: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) { /* Untuk mobile */
+    .header h1 {
+        font-size: 2rem;
+    }
+    .header p {
+        font-size: 1rem;
+    }
+    .main-container {
+        margin: 1rem;
+        border-radius: 15px;
+        padding: 0.5rem; /* Kurangi padding di container utama */
+    }
+    .main-content, .upload-form, .feature-info {
+        padding: 1.5rem; /* Kurangi padding di konten */
+    }
+    .sidebar, .main-content {
+        margin-bottom: 1.5rem;
+    }
+    .btn {
+        padding: 0.6rem 1.2rem;
+    }
+}
+
+.method-icon {
+    width: 20px; /* Ukuran ikon disamakan */
+    height: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.25rem; /* Jarak kanan ikon */
+}
+
+/* Pastikan FontAwesome termuat dengan benar */
+.fas {
+    line-height: inherit; /* Atur line-height agar ikon tidak mengganggu layout */
+}
