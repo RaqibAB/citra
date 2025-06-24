@@ -4,14 +4,14 @@ import numpy as np
 import os
 import base64
 from datetime import datetime
-import logging # <--- TAMBAHKAN IMPORT INI
+import logging 
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
 app.secret_key = 'ganti_dengan_kunci_rahasia_yang_kuat_dan_unik' # Ganti dengan kunci yang kuat dan acak
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 app.config['RESULT_FOLDER'] = 'static/results'
 
-# Pastikan direktori ada
+
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 os.makedirs(app.config['RESULT_FOLDER'], exist_ok=True)
 
@@ -181,12 +181,10 @@ def morphology_regionfill(image_input):
     mask = np.zeros((h+2, w+2), np.uint8)
 
     # Floodfill dari border (0,0) pada citra objek hitam, bg putih
-    # Ini akan mengisi semua area background (yang putih) menjadi hitam
+    
     cv2.floodFill(im_floodfill, mask, (0,0), 0) # Isi dengan 0 (hitam)
 
-    # Hasilnya adalah objek (yang awalnya lubang) menjadi putih, dan background hitam
-    # Gabungkan dengan citra objek putih asli untuk memastikan objek luar tetap ada
-    # Atau, jika objek di im_floodfill adalah lubang yang terisi, kita bisa OR dengan asli
+    
     
     # Cara lain: fill dari contour
     filled_image = binary_obj_white.copy()
@@ -216,17 +214,29 @@ def morphology_purning(image):
     return cv2.erode(skel, kernel, iterations=1)
 
 def morphology_thinning(image):
-    binary = _ensure_binary(image)
-    if binary is None: return None
+    """Apply morphological thinning operation using Zhang-Suen algorithm."""
     try:
-        thin = cv2.ximgproc.thinning(binary, thinningType=cv2.ximgproc.THINNING_ZHANGSUEN)
-        return thin
-    except AttributeError:
-        flash("Metode Thinning (cv2.ximgproc) tidak tersedia atau error. Menggunakan Skeletonization.", "warning")
-        return morphology_skeleton(binary)
+        # Import ximgproc from contrib module
+        from cv2 import ximgproc
+    except ImportError:
+        app.logger.warning("cv2.ximgproc not available. Using skeleton method instead.")
+        return morphology_skeleton(image)
+
+    binary = _ensure_binary(image)
+    if binary is None: 
+        return None
+        
+    try:
+        # Apply Zhang-Suen thinning
+        thinned = ximgproc.thinning(
+            binary, 
+            thinningType=ximgproc.THINNING_ZHANGSUEN
+        )
+        return thinned
     except Exception as e:
-        flash(f"Error saat Thinning: {e}. Menggunakan Skeletonization.", "danger")
-        return morphology_skeleton(binary)
+        app.logger.error(f"Thinning error: {str(e)}")
+        # Fallback to morphological skeleton
+        return morphology_skeleton(image)
 
 @app.route('/')
 def index():
